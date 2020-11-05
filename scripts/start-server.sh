@@ -2,6 +2,8 @@
 
 . scripts/version.sh
 
+BRANCH=${GITHUB_REF:-${TRAVIS_BRANCH:-latest}}
+
 set -v
 
 function waitForServer {
@@ -28,14 +30,12 @@ URL="https://repo1.maven.org/maven2/org/keycloak/$DIST/${VERSION}/$DIST-${VERSIO
 # Download keycloak server if we don't already have it
 if [[ $TRAVIS_BRANCH = "latest" ]];
 then
-  curl -o $ARCHIVE $URL
-  tar xzf $ARCHIVE
-  rm -f $ARCHIVE
+  curl $URL | tar xz
 else
   KEYCLOAK="keycloak-server"
 fi
 
-cp authz-js-policies/target/authz-js-policies.jar $KEYCLOAK/standalone/deployments 
+cp authz-js-policies/target/authz-js-policies.jar $KEYCLOAK/standalone/deployments
 $KEYCLOAK/bin/add-user-keycloak.sh -u admin -p admin
 # Start the server
 $KEYCLOAK/bin/standalone.sh -Djava.net.preferIPv4Stack=true \

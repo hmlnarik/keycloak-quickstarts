@@ -45,16 +45,16 @@ find . -type f \( -name "*README*" -o -name "*getting-started*" -o -name "*test-
 sed -i '/<repositories>/,/<\/repositories>/ d' pom.xml
 
 # Add RHSSO Repo
-sed -i '/<\/modules>/{ 
+sed -i '/<\/modules>/{
     a \    </modules>
-    a \ 
+    a \
     r scripts/ssorepo.txt
-    d 
+    d
 }' pom.xml
 
 # Update version to productized versions
-find . -type f -name "*pom.xml*" -exec sed -i "s/<version>.*SNAPSHOT/<version>$GH_PROD_VERSION/g" {} + 
-find . -type f -name "*pom.xml*" -exec sed -i "s@<version.keycloak>.*</version.keycloak>@<version.keycloak>$KEYCLOAK_VERSION</version.keycloak>@g" {} + 
+find . -type f -name "*pom.xml*" -exec sed -i "s/<version>.*SNAPSHOT/<version>$GH_PROD_VERSION/g" {} +
+find . -type f -name "*pom.xml*" -exec sed -i "s@<version.keycloak>.*</version.keycloak>@<version.keycloak>$KEYCLOAK_VERSION</version.keycloak>@g" {} +
 
 # Switch to productized artifacts
 new_version='${project.version}'
@@ -67,25 +67,25 @@ find . -type f -name "*pom.xml*" -exec sed -i '/<dependency>/ {
         s/\(<version>\).*\(<\/version>\)/\1'"$new_version"'\2/
     }
 }' {} +
-find . -type f -name "*pom.xml*" -exec sed -i 's@org.keycloak.bom@com.redhat.bom.rh-sso@g' {} + 
-find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-adapter-bom@rh-sso-adapter-bom@g' {} + 
-find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-spi-bom@rh-sso-spi-bom@g' {} + 
-find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-misc-bom@rh-sso-misc-bom@g' {} + 
+find . -type f -name "*pom.xml*" -exec sed -i 's@org.keycloak.bom@com.redhat.bom.rh-sso@g' {} +
+find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-adapter-bom@rh-sso-adapter-bom@g' {} +
+find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-spi-bom@rh-sso-spi-bom@g' {} +
+find . -type f -name "*pom.xml*" -exec sed -i 's@keycloak-misc-bom@rh-sso-misc-bom@g' {} +
 
 # Rename names in POMs
 find . -type f -name "*pom.xml*" -exec sed -i 's@<name>Keycloak Quickstart@<name>Red Hat SSO Quickstart@g' {} +
 
-
+exit
 git checkout -b prod_staging
 git checkout action-token-authenticator/pom.xml
-git checkout action-token-required-action/pom.xml 
+git checkout action-token-required-action/pom.xml
 git checkout app-springboot/pom.xml
 git checkout app-springboot/README.md
 git checkout event-listener-sysout/pom.xml
-git checkout event-store-mem/pom.xml 
+git checkout event-store-mem/pom.xml
 git rm -r action-token-authenticator
 git rm -r action-token-required-action
-git rm -r app-springboot 
+git rm -r app-springboot
 git rm -r kubernetes-examples
 git rm -r openshift-examples
 git rm -r event-listener-sysout
